@@ -6,7 +6,7 @@ import http from "http";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import dbConnection from "./config/db.js";
-import ChatMessage from "./models/ChatMessage.js";
+import ChatMessage from "./models/ChatMessageModel.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
@@ -15,7 +15,7 @@ import supportRoutes from "./routes/supportRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import passwordRoutes from "./routes/passwordRoutes.js";
 
-dotenv.config(); 
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -68,7 +68,6 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/password", passwordRoutes);
 app.get("/health", (req, res) => res.send("OK"));
 
-
 // 404 Handler
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
@@ -77,7 +76,7 @@ app.use((req, res) => {
 // Global Error Handler
 app.use((err, req, res, next) => {
   console.error("❌ Error:", err.stack);
-  res.status(500).json({ message: "Server error" }); 
+  res.status(500).json({ message: "Server error" });
 });
 
 // ✅ SOCKET.IO HANDLING
@@ -138,6 +137,3 @@ server.listen(PORT, () => {
   console.log(`🚀 Server + Socket.IO running on port ${PORT}`);
   console.log(`📡 Socket.IO available at /socket.io`);
 });
-
-
-

@@ -1,5 +1,5 @@
-import User from "../models/User.js";
-import Transaction from "../models/Transaction.js";
+import User from "../models/UserModel.js";
+import Transaction from "../models/TransactionModel.js";
 
 // Get all users (Admin only)
 export const getAllUsers = async (req, res) => {

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Transaction from "../models/Transaction.js";
-import User from "../models/User.js";
+import Transaction from "../models/TransactionModel.js";
+import User from "../models/UserModel.js";
 
 // Deposit Funds
 export const depositFunds = async (req, res) => {
@@ -225,9 +225,10 @@ export const getTransactionHistory = async (req, res) => {
 
     // Always return 200 — even if empty
     return res.status(200).json({
-      message: transactions.length === 0
-        ? "No transactions found."
-        : "Transaction history retrieved successfully.",
+      message:
+        transactions.length === 0
+          ? "No transactions found."
+          : "Transaction history retrieved successfully.",
       count: transactions.length,
       total,
       page,

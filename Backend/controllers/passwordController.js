@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
-import User from "../models/User.js";
+import User from "../models/UserModel.js";
 import sendEmail from "../utils/sendEmail.js";
 
 export const forgotPassword = async (req, res) => {

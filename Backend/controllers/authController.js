@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import User from "../models/User.js";
+import User from "../models/UserModel.js";
 import sendEmail from "../utils/sendEmail.js";
 
 /**
