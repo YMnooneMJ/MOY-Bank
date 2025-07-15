@@ -7,6 +7,7 @@ import {
   getAllUsers,
   changePassword,
   uploadAvatar,
+  getCurrentUser
 } from "../controllers/userController.js";
 import { body } from "express-validator";
 import handleValidationErrors from "../middleware/handleValidationErrors.js";
