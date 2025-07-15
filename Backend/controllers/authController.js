@@ -4,9 +4,15 @@ import crypto from "crypto";
 import User from "../models/User.js";
 import sendEmail from "../utils/sendEmail.js";
 
-// Generate JWT Token
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+/**
+ * ✅ Generates JWT token including user ID and role
+ */
+const generateToken = (user) => {
+  return jwt.sign(
+    { userId: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
 };
 
 // @desc    Register new user
@@ -45,11 +51,11 @@ export const registerUser = async (req, res) => {
       password: hashedpassword,
       phoneNumber,
       accountNumber,
-      role: "user", // Always set to "user"
+      role: "user", // Only "user" by default
     });
 
     // Generate token
-    const token = generateToken(newUser._id);
+    const token = generateToken(newUser);
 
     res.status(201).json({
       message: "Registration successful",
@@ -64,7 +70,7 @@ export const registerUser = async (req, res) => {
       token,
     });
   } catch (err) {
-    console.error(err); // Log full error on server
+    console.error("Registration Error:", err); // Log full error on server
     res.status(500).json({
       message: "Registration failed",
     });
@@ -76,7 +82,7 @@ export const registerUser = async (req, res) => {
 // @access  Public
 export const loginUser = async (req, res) => {
   try {
-    console.log("Login body:", req.body); // Add this line
+    console.log("Login body:", req.body);
     const { emailorUsername, password } = req.body;
 
     // Find user by email or username
@@ -113,6 +119,7 @@ export const loginUser = async (req, res) => {
       token,
     });
   } catch (err) {
+    console.error("Login Error", err);
     res.status(500).json({
       message: "Login failed",
       error: err.message,
@@ -153,6 +160,8 @@ export const forgotPassword = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// Reset Password
 export const resetPassword = async (req, res) => {
   const { token } = req.params;
   const { newPassword } = req.body;
@@ -160,11 +169,15 @@ export const resetPassword = async (req, res) => {
   try {
     const user = await User.findOne({
       resetPasswordToken: token,
-      resetPasswordExpires: { $gt: Date.now() }, // not expired
+      resetPasswordExpires: { $gt: Date.now() }, // Check not expired
     });
 
     if (!user)
       return res.status(400).json({ message: "Invalid or expired token" });
+
+    // 🔐 Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
 
     user.password = newPassword;
     user.resetPasswordToken = undefined;

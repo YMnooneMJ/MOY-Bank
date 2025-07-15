@@ -43,6 +43,7 @@ io.use((socket, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     socket.userId = decoded.userId;
+    socket.userRole = decoded.role;
     next();
   } catch (err) {
     next(new Error("Authentication error"));
@@ -67,6 +68,8 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/support", supportRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/password", passwordRoutes);
+app.get("/health", (req, res) => res.send("OK"));
+
 
 // 404 Handler
 app.use((req, res) => {
@@ -76,7 +79,7 @@ app.use((req, res) => {
 // Global Error Handler
 app.use((err, req, res, next) => {
   console.error("❌ Error:", err.stack);
-  res.status(500).json({ message: "Server error" });
+  res.status(500).json({ message: "Server error" }); 
 });
 
 // ✅ SOCKET.IO HANDLING
@@ -133,6 +136,10 @@ io.on("connection", (socket) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server + Socket.IO running at http://localhost:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`🚀 Server + Socket.IO running on port ${PORT}`);
+  console.log(`📡 Socket.IO available at /socket.io`);
 });
+
+
+
