@@ -13,6 +13,8 @@ import handleValidationErrors from "../middleware/handleValidationErrors.js";
 
 const router = express.Router();
 
+router.get("/me", protect, getCurrentUser);
+
 // Validation middleware for updating profile
 const validateUpdateProfile = [
   body("fullName")
