@@ -17,7 +17,7 @@ const Support = () => {
 
     const token = localStorage.getItem("token");
 
-    socketRef.current = io("https://moy-bank-backend.onrender.com/api/support/inbox", {
+    socketRef.current = io("https://moy-bank.onrender.com/api/support/inbox", {
       auth: {
         token,
       },

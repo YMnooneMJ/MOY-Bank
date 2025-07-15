@@ -21,7 +21,7 @@ const Withdraw = () => {
 
     try {
       const res = await axios.post(
-        "https://moy-bank-backend.onrender.com/api/transactions/withdraw",
+        "https://moy-bank.onrender.com/api/transactions/withdraw",
         {
           amount: parsedAmount,
           description,

@@ -25,7 +25,7 @@ const Transfer = () => {
 
     try {
       const res = await axios.post(
-        "https://moy-bank-backend.onrender.com/api/transactions/transfer",
+        "https://moy-bank.onrender.com/api/transactions/transfer",
         {
           toAccountNumber,
           amount: parsedAmount,

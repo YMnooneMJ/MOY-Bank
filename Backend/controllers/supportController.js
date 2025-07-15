@@ -1,5 +1,4 @@
 import ChatMessage from "../models/ChatMessage.js";
-import User from "../models/User.js";
 
 export const getSupportInbox = async (req, res) => {
   try {

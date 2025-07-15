@@ -16,7 +16,7 @@ const ForgotPassword = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "https://moy-bank-backend.onrender.com/api/auth/forgot-password",
+        "https://moy-bank.onrender.com/api/auth/forgot-password",
         { emailOrUsername }
       );
 

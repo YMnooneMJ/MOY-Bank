@@ -23,7 +23,7 @@ const AdminPanel = () => {
     const fetchAllUsers = async () => {
       try {
         const res = await axios.get(
-          "https://moy-bank-backend.onrender.com/api/admin/users",
+          "https://moy-bank.onrender.com/api/admin/users",
           {
             headers: { Authorization: `Bearer ${token}` },
           }

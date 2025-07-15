@@ -1,5 +1,4 @@
 import ChatMessage from "../models/ChatMessage.js";
-import User from "../models/User.js";
 
 // Get recent message per user
 export const getSupportInbox = async (req, res) => {

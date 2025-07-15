@@ -21,6 +21,7 @@ const Topbar = () => {
       </h1>
 
       <div className="flex items-center gap-3">
+        
         {/* Placeholder avatar with initials */}
         <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold">
           {user?.fullName ? getInitials(user.fullName) : "👤"}

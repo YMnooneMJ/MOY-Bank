@@ -30,7 +30,7 @@ const Login = () => {
     try {
       const payload = { ...form, isAdmin };
       const { data } = await axios.post(
-        "https://moy-bank-backend.onrender.com/api/auth/login",
+        "https://moy-bank.onrender.com/api/auth/login",
         payload
       );
 

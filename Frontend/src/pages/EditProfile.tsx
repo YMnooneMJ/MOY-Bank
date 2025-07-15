@@ -18,7 +18,7 @@ const EditProfile: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("https://moy-bank-backend.onrender.com/api/users/profile", {
+        const res = await axios.get("https://moy-bank.onrender.com/api/users/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -46,7 +46,7 @@ const EditProfile: React.FC = () => {
 
     try {
       const res = await axios.put(
-        "https://moy-bank-backend.onrender.com/api/users/profile",
+        "https://moy-bank.onrender.com/api/users/profile",
         form,
         {
           headers: { Authorization: `Bearer ${token}` },

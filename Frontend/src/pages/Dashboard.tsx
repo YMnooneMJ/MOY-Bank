@@ -39,10 +39,10 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const [userRes, txRes] = await Promise.all([
-          axios.get("https://moy-bank-backend.onrender.com/api/users/profile", {
+          axios.get("https://moy-bank.onrender.com/api/users/profile", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get("https://moy-bank-backend.onrender.com/api/transactions/history", {
+          axios.get("https://moy-bank.onrender.com/api/transactions/history", {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);

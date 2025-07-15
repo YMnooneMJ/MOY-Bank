@@ -35,7 +35,7 @@ const UploadAvatar: React.FC = () => {
     setLoading(true);
     try {
       const res = await axios.post(
-        "https://moy-bank-backend.onrender.com/api/users/upload-avatar",
+        "https://moy-bank.onrender.com/api/users/upload-avatar",
         formData,
         {
           headers: {

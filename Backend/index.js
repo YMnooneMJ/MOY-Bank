@@ -1,12 +1,10 @@
 import express from "express";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
 import http from "http";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
-
 import dbConnection from "./config/db.js";
 import ChatMessage from "./models/ChatMessage.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -17,7 +15,7 @@ import supportRoutes from "./routes/supportRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import passwordRoutes from "./routes/passwordRoutes.js";
 
-dotenv.config();
+dotenv.config(); 
 
 const app = express();
 const PORT = process.env.PORT || 3000;

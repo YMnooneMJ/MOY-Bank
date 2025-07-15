@@ -38,7 +38,7 @@ const ChangePassword = () => {
     try {
       setLoading(true);
       const res = await axios.put(
-        "https://moy-bank-backend.onrender.com/api/users/change-password",
+        "https://moy-bank.onrender.com/api/users/change-password",
         { oldPassword, newPassword },
         {
           headers: { Authorization: `Bearer ${token}` },

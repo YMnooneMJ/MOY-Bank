@@ -19,7 +19,7 @@ const AdminInbox = () => {
   useEffect(() => {
     const fetchInbox = async () => {
       try {
-        const res = await axios.get("https://moy-bank-backend.onrender.com/api/chat/inbox");
+        const res = await axios.get("https://moy-bank.onrender.com/api/chat/inbox");
         setInbox(res.data);
       } catch (error) {
         console.error("Inbox fetch failed:", error);

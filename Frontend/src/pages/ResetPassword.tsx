@@ -24,7 +24,7 @@ const ResetPassword = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        `https://moy-bank-backend.onrender.com/api/auth/reset-password/${token}`,
+        `https://moy-bank.onrender.com/api/auth/reset-password/${token}`,
         { password }
       );
       toast.success(res.data?.message || "Password reset successful!");

@@ -41,7 +41,7 @@ const Register = () => {
 
     try {
       const { data } = await axios.post(
-        "https://moy-bank-backend.onrender.com/api/auth/register",
+        "https://moy-bank.onrender.com/api/auth/register",
         form
       );
 

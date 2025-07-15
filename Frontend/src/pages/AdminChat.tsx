@@ -4,7 +4,7 @@ import { io, Socket } from "socket.io-client";
 import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
-const socket: Socket = io("https://moy-bank-backend.onrender.com");
+const socket: Socket = io("https://moy-bank.onrender.com");
 
 const AdminChat = () => {
   const { user } = useAuth();

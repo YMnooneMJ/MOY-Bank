@@ -18,7 +18,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(
-          "https://moy-bank-backend.onrender.com/api/users/profile",
+          "https://moy-bank.onrender.com/api/users/profile",
           {
             headers: { Authorization: `Bearer ${token}` },
           }

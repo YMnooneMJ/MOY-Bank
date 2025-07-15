@@ -23,7 +23,7 @@ const Deposit = () => {
 
     try {
       const res = await axios.post(
-        "https://moy-bank-backend.onrender.com/api/transactions/deposit",
+        "https://moy-bank.onrender.com/api/transactions/deposit",
         {
           amount: parseFloat(amount),
           description,

@@ -5,7 +5,7 @@ import User from "../models/User.js";
 import sendEmail from "../utils/sendEmail.js";
 
 /**
- * ✅ Generates JWT token including user ID and role
+ *  Generates JWT token including user ID and role
  */
 const generateToken = (user) => {
   return jwt.sign(
@@ -175,7 +175,7 @@ export const resetPassword = async (req, res) => {
     if (!user)
       return res.status(400).json({ message: "Invalid or expired token" });
 
-    // 🔐 Hash the new password
+    // Hash the new password
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);
 
