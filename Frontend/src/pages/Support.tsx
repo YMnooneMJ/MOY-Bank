@@ -1,100 +1,117 @@
+// SupportChat.tsx
 import { useEffect, useState, useRef } from "react";
-import { io, Socket } from "socket.io-client";
+import io, { Socket } from "socket.io-client";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
+import toast from "react-hot-toast";
 
-const Support = () => {
-  const { user } = useAuth();
-  const [messages, setMessages] = useState<{ from: string; text: string }[]>(
-    []
-  );
-  const [message, setMessage] = useState("");
+const SOCKET_URL = "https://moy-bank.onrender.com";
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const socketRef = useRef<Socket | null>(null); // ✅ move inside component
+interface Message {
+  _id?: string;
+  text: string;
+  from: string;
+  fromSupport: boolean;
+  createdAt?: string;
+}
 
+const SupportChat = () => {
+  const { user, token } = useAuth();
+  const { isDarkMode } = useTheme();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState("");
+  const socketRef = useRef<Socket | null>(null);
+  const chatRef = useRef<HTMLDivElement | null>(null);
+
+  // Scroll to bottom when messages update
   useEffect(() => {
-    if (!user) return;
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [messages]);
 
-    const token = localStorage.getItem("token");
+  // Initialize Socket.IO connection
+  useEffect(() => {
+    if (!token || !user) return;
 
-    socketRef.current = io("https://moy-bank.onrender.com/api/support/inbox", {
-      auth: {
-        token,
-      },
+    const socket = io(SOCKET_URL, {
+      auth: { token },
+    });
+    socketRef.current = socket;
+
+    socket.on("connect", () => {
+      socket.emit("joinRoom");
     });
 
-    const socket = socketRef.current;
-
-    socket.emit("joinRoom", user._id);
-
-    socket.on("chatMessage", (msg) => {
+    socket.on("chatMessage", (msg: Message) => {
       setMessages((prev) => [...prev, msg]);
+    });
+
+    socket.on("error", (err) => {
+      toast.error(err);
     });
 
     return () => {
       socket.disconnect();
     };
-  }, [user]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [token, user]);
 
   const sendMessage = () => {
-    if (!socketRef.current || message.trim() === "") return;
-
-    const msg = {
-      from: user.fullName,
-      fromId: user._id,
-      text: message,
+    if (!newMessage.trim()) return;
+    const msg: Message = {
+      text: newMessage,
+      from: user?.fullName || "User",
       fromSupport: false,
     };
+    socketRef.current?.emit("chatMessage", msg);
+    setNewMessage("");
+  };
 
-    socketRef.current.emit("chatMessage", msg);
-    setMessages((prev) => [...prev, msg]);
-    setMessage("");
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") sendMessage();
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 p-4">
-      <h2 className="text-2xl font-bold mb-4">Support Chat</h2>
-
-      <div className="h-[400px] overflow-y-auto bg-white dark:bg-gray-800 p-4 rounded shadow space-y-2">
-        {messages.map((msg, index) => (
+    <div
+      className={`max-w-md mx-auto mt-10 border rounded-xl shadow-lg h-[500px] flex flex-col overflow-hidden ${
+        isDarkMode ? "bg-[#0f172a] border-gray-700 text-white" : "bg-white border-gray-200"
+      }`}
+    >
+      <div className="p-4 text-center font-semibold border-b dark:border-gray-700">
+        💬 Support Chat
+      </div>
+      <div ref={chatRef} className="flex-1 overflow-y-auto p-4 space-y-3">
+        {messages.map((msg, idx) => (
           <div
-            key={index}
-            className={`p-2 rounded ${
-              msg.from === user.fullName
-                ? "bg-blue-100 dark:bg-blue-700 text-right"
-                : "bg-gray-200 dark:bg-gray-600"
+            key={idx}
+            className={`max-w-[75%] px-3 py-2 rounded-xl ${
+              msg.fromSupport
+                ? isDarkMode
+                  ? "bg-gray-700 self-start"
+                  : "bg-gray-200 self-start"
+                : "bg-primary text-white self-end"
             }`}
           >
-            <p className="text-sm">{msg.text}</p>
-            <p className="text-xs text-gray-500 mt-1">
-              {msg.from === user.fullName ? "You" : msg.from}
-            </p>
+            <p className="text-sm whitespace-pre-line">{msg.text}</p>
           </div>
         ))}
-        <div ref={messagesEndRef} />
       </div>
-
-      <div className="flex mt-4 space-x-2">
+      <div className="p-4 border-t dark:border-gray-700 flex gap-2">
         <input
           type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="flex-1 px-4 py-2 border rounded"
-          placeholder="Type your message..."
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyPress={handleKeyPress}
+          className={`flex-1 px-4 py-2 rounded-xl outline-none border ${
+            isDarkMode
+              ? "bg-gray-800 text-white border-gray-700"
+              : "bg-gray-100 border-gray-300 text-gray-900"
+          }`}
+          placeholder="Type a message..."
         />
         <button
           onClick={sendMessage}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark"
         >
           Send
         </button>
@@ -103,4 +120,4 @@ const Support = () => {
   );
 };
 
-export default Support;
+export default SupportChat;

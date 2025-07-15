@@ -209,6 +209,7 @@ export const getTransactionHistory = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
+    // Fetch transactions where user is sender or receiver
     const transactions = await Transaction.find({
       $or: [{ sender: userId }, { receiver: userId }],
     })
@@ -222,12 +223,11 @@ export const getTransactionHistory = async (req, res) => {
       $or: [{ sender: userId }, { receiver: userId }],
     });
 
-    if (transactions.length === 0) {
-      return res.status(404).json({ message: "No transactions found." });
-    }
-
-    res.status(200).json({
-      message: "Transaction history retrieved successfully.",
+    // Always return 200 — even if empty
+    return res.status(200).json({
+      message: transactions.length === 0
+        ? "No transactions found."
+        : "Transaction history retrieved successfully.",
       count: transactions.length,
       total,
       page,
@@ -256,7 +256,7 @@ export const getTransactionHistory = async (req, res) => {
       })),
     });
   } catch (err) {
-    console.error("Transaction history error:", err);
+    console.error("❌ Transaction history error:", err);
     res.status(500).json({
       message: "Internal server error while fetching transaction history.",
       error: err.message,

@@ -22,6 +22,7 @@ import AdminChat from "./pages/AdminChat";
 import Landing from "./pages/Landing";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import AdminDashboard from "./admin/AdminDashboard";
 
 const AppRoutes = () => {
   return (
@@ -30,10 +31,10 @@ const AppRoutes = () => {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-       <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-      {/* Protected Routes */}
+      {/* Protected User Dashboard Routes */}
       <Route
         path="/dashboard"
         element={
@@ -54,7 +55,7 @@ const AppRoutes = () => {
         <Route path="change-password" element={<ChangePassword />} />
         <Route path="upload-avatar" element={<UploadAvatar />} />
 
-        {/* Admin Routes (still inside dashboard layout) */}
+        {/* Optional: admin subroutes inside user dashboard (only if meant to show under same layout) */}
         <Route
           path="admin"
           element={
@@ -80,6 +81,16 @@ const AppRoutes = () => {
           }
         />
       </Route>
+
+      {/* ✅ Top-level Admin Dashboard Route */}
+      <Route
+        path="/admin/dashboard"
+        element={
+          <RequireAdmin>
+            <AdminDashboard />
+          </RequireAdmin>
+        }
+      />
 
       {/* Fallback */}
       <Route path="*" element={<NotFound />} />

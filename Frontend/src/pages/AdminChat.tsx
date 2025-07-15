@@ -1,96 +1,154 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
+import toast from "react-hot-toast";
+import axios from "axios";
 
-const socket: Socket = io("https://moy-bank.onrender.com");
+interface Message {
+  _id?: string;
+  text: string;
+  from: string;
+  fromSupport?: boolean;
+  userId: string;
+  createdAt?: string;
+}
 
 const AdminChat = () => {
-  const { user } = useAuth();
-  const { userId } = useParams();
-  const [messages, setMessages] = useState<any[]>([]);
-  const [message, setMessage] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { user, token } = useAuth();
+  const { isDarkMode } = useTheme();
+  const socketRef = useRef<Socket | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [userList, setUserList] = useState<{ userId: string; lastMessage: string }[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState("");
 
-  useEffect(() => {
-    if (!userId || !user) return;
-
-    socket.emit("joinRoom", userId);
-
-    socket.on("chatMessage", (msg) => {
-      if (msg.userId === userId) {
-        setMessages((prev) => [...prev, msg]);
-      }
-    });
-
-    const fetchMessages = async () => {
-      const res = await axios.get(`/api/chat/user/${userId}`);
-      setMessages(res.data);
-    };
-
-    fetchMessages();
-
-    return () => {
-      socket.off("chatMessage");
-    };
-  }, [userId, user]);
-
+  // Scroll to bottom on message change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = () => {
-    if (!message.trim()) return;
-    const msg = {
-      from: user.fullName,
-      fromId: user._id,
-      text: message,
-      fromSupport: true,
-      userId, // target user ID
+  // Load chat inbox user list on mount
+  useEffect(() => {
+    if (!token || user?.role !== "admin") return;
+    const fetchInbox = async () => {
+      try {
+        const res = await axios.get("https://moy-bank.onrender.com/api/support/inbox", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserList(res.data);
+      } catch (err: any) {
+        toast.error(err.response?.data?.message || "Failed to load inbox");
+      }
     };
-    socket.emit("chatMessage", msg);
-    setMessages((prev) => [...prev, msg]);
-    setMessage("");
+    fetchInbox();
+  }, [token, user?.role]);
+
+  // Socket connection and handlers
+  useEffect(() => {
+    if (!token || user?.role !== "admin") return;
+    const socket = io("https://moy-bank.onrender.com", {
+      auth: { token },
+    });
+    socketRef.current = socket;
+
+    socket.on("connect", () => {
+      socket.emit("joinSupportRoom");
+    });
+
+    socket.on("chatMessage", (msg: Message) => {
+      if (msg.userId === selectedUserId) {
+        setMessages((prev) => [...prev, msg]);
+      }
+    });
+
+    socket.on("error", (msg: string) => toast.error(msg));
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [token, user?.role, selectedUserId]);
+
+  const loadMessages = async (userId: string) => {
+    setSelectedUserId(userId);
+    try {
+      const res = await axios.get(`https://moy-bank.onrender.com/api/support/history/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setMessages(res.data);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to load messages");
+    }
+  };
+
+  const sendMessage = () => {
+    if (!newMessage.trim()) return;
+    const msg: Message = {
+      text: newMessage,
+      from: "Admin",
+      userId: selectedUserId,
+      fromSupport: true,
+    };
+    socketRef.current?.emit("chatMessage", msg);
+    setMessages((prev) => [...prev, { ...msg, fromId: user?.id }]);
+    setNewMessage("");
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 p-4">
-      <h2 className="text-2xl font-bold mb-4">Chat with User</h2>
-
-      <div className="h-[400px] overflow-y-auto bg-white dark:bg-gray-800 p-4 rounded shadow space-y-2">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`p-2 rounded ${
-              msg.fromSupport
-                ? "bg-green-100 dark:bg-green-700 text-right"
-                : "bg-gray-200 dark:bg-gray-600"
-            }`}
-          >
-            <p className="text-sm">{msg.text}</p>
-            <p className="text-xs text-gray-500 mt-1">
-              {msg.fromSupport ? "Admin" : msg.from}
-            </p>
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
+    <div className={`grid grid-cols-1 md:grid-cols-4 h-[90vh] ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+      {/* Sidebar user list */}
+      <div className="border-r border-gray-300 dark:border-gray-700 p-4 overflow-y-auto">
+        <h2 className="text-lg font-semibold mb-4">📬 Support Inbox</h2>
+        <ul className="space-y-3">
+          {userList.map((u) => (
+            <li
+              key={u.userId}
+              className={`cursor-pointer p-2 rounded-xl ${selectedUserId === u.userId ? "bg-primary text-white" : "hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+              onClick={() => loadMessages(u.userId)}
+            >
+              <p className="font-medium">User ID: {u.userId.slice(0, 6)}...</p>
+              <p className="text-sm truncate">{u.lastMessage}</p>
+            </li>
+          ))}
+        </ul>
       </div>
 
-      <div className="flex mt-4 space-x-2">
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="flex-1 px-4 py-2 border rounded"
-          placeholder="Type your message..."
-        />
-        <button
-          onClick={sendMessage}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-        >
-          Send
-        </button>
+      {/* Chat area */}
+      <div className="col-span-3 flex flex-col">
+        <div className="flex-1 p-4 overflow-y-auto space-y-3">
+          {messages.map((msg, i) => (
+            <div
+              key={i}
+              className={`max-w-md px-4 py-2 rounded-2xl ${
+                msg.fromSupport ? "bg-primary text-white ml-auto" : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
+              }`}
+            >
+              <p className="text-sm">{msg.text}</p>
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {selectedUserId && (
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-1 px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none"
+              />
+              <button
+                onClick={sendMessage}
+                className="px-5 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark transition"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
