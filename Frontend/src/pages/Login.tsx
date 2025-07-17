@@ -51,6 +51,7 @@ const Login = () => {
     }
   };
   const { user, login } = useAuth();
+  
   // ✅ Auto-redirect if already logged in
   useEffect(() => {
     if (user) {
@@ -59,8 +60,8 @@ const Login = () => {
   }, [user, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 p-4">
-      <div className="bg-white dark:bg-gray-800 p-8 rounded shadow w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-950 p-4">
+      <div className="bg-white dark:bg-gray-900 p-8 rounded shadow w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">
           Login
         </h2>

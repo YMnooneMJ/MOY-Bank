@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "../api/axios";
-import { useAuth } from "../context/AuthContext";
+import axios from "../../api/axios";
+import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 interface UserPreview {

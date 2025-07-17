@@ -5,9 +5,9 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Transfer from "./pages/Transfer";
 import Support from "./pages/Support";
-import AdminPanel from "./pages/AdminPanel";
+import AdminPanel from "./pages/Admin/AdminPanel";
 import RequireAuth from "./components/RequireAuth";
-import RequireAdmin from "./components/auth/RequireAdmin";
+import RequireAdmin from "./auth/RequireAdmin";
 import Transactions from "./pages/Transactions";
 import ChangePassword from "./pages/ChangePassword";
 import UploadAvatar from "./pages/UploadAvatar";
@@ -17,12 +17,12 @@ import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import Deposit from "./pages/Deposit";
 import Withdraw from "./pages/Withdraw";
-import AdminInbox from "./pages/AdminInbox";
-import AdminChat from "./pages/AdminChat";
+import AdminInbox from "./pages/Admin/AdminInbox";
+import AdminChat from "./pages/Admin/AdminChat";
 import Landing from "./pages/Landing";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import AdminDashboard from "./admin/AdminDashboard";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
 
 const AppRoutes = () => {
   return (

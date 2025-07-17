@@ -131,6 +131,8 @@ export const changePassword = async (req, res) => {
 // Upload Avatar
 export const uploadAvatar = async (req, res) => {
   try {
+    console.log("File received:", req.file);
+    
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
     const user = await User.findById(req.user._id);

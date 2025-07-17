@@ -1,100 +1,67 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useCallback,
-} from "react";
-import { useNavigate } from "react-router-dom";
+import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
-// User type definition
-interface User {
-  _id: string;
+type User = {
+  id: string;
   fullName: string;
-  email: string;
   role: string;
-  avatar?: string;
-}
+  email: string;
+  // Add other fields as needed
+};
 
-// Context type definition
-interface AuthContextType {
+type AuthContextType = {
   user: User | null;
   token: string | null;
-  login: (token: string) => Promise<void>;
+  setUser: (user: User | null) => void;
+  setToken: (token: string | null) => void;
   logout: () => void;
-}
+};
 
-// Create Context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Provider Component
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("token")
-  );
-  const navigate = useNavigate();
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem("token");
+  });
 
-  // Stable logout function using useCallback
-  const logout = useCallback(() => {
-    localStorage.removeItem("token");
-    setToken(null);
-    setUser(null);
-    navigate("/login");
-  }, [navigate]);
-
-  // Fetch user profile if token exists
   useEffect(() => {
     const fetchUser = async () => {
-      if (token && !user) {
-        try {
-          const res = await axios.get(
-            "https://moy-bank.onrender.com/api/users/profile",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          setUser(res.data);
-        } catch (err) {
-          console.error("❌ Auth fetch error:", err);
-          logout();
-        }
+      try {
+        if (!token) return;
+        const res = await axios.get("https://moy-bank.onrender.com/api/users/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUser(res.data.user || res.data); // depends on your response structure
+      } catch (err) {
+        console.error("Auth fetch error:", err);
+        setToken(null);
+        setUser(null);
       }
     };
 
     fetchUser();
-  }, [token, user, logout]);
+  }, [token]);
 
-  // Login function
-  const login = async (newToken: string) => {
-    localStorage.setItem("token", newToken);
-    setToken(newToken);
-    await new Promise((res) => setTimeout(res, 200)); // Wait for token to update
-    navigate("/dashboard");
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+    setToken(null);
   };
 
-  // Context value
-  const value: AuthContextType = {
-    user,
-    token,
-    login,
-    logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, token, setUser, setToken, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-// Hook to consume auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used inside an AuthProvider");
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };
-
-export { AuthContext };

@@ -54,9 +54,9 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="p-6">
+    <div className="p-6 ">
       <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
-        👋 Welcome back, {user?.fullName?.split(" ")[0]}
+        Hi👋, {user?.fullName?.split(" ")[0]}
       </h2>
 
       <div className="grid md:grid-cols-2 gap-6 mb-10">

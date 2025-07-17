@@ -93,7 +93,7 @@ const Transfer = () => {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="max-w-lg mx-auto bg-white dark:bg-gray-800 p-6 rounded-xl shadow"
+      className="max-w-lg mx-auto bg-white dark:bg-gray-800 p-6 mt-10 rounded-xl shadow"
     >
       <h2 className="text-2xl font-semibold mb-2">Transfer Funds</h2>
       {balance !== null && (

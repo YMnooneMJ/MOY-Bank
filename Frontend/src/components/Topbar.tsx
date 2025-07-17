@@ -12,7 +12,7 @@ const Topbar = () => {
   };
 
   return (
-    <header className="w-full px-4 md:px-6 py-3 border-b dark:border-gray-700 bg-white dark:bg-gray-900 flex justify-between items-center">
+    <header className="w-full px-4 md:px-6 py-3 border-b dark:border-gray-900 bg-white dark:bg-gray-950 flex justify-between items-center">
       <h1 className="text-xl font-semibold text-gray-800 dark:text-white">
         Welcome,
         <span className="text-primary">

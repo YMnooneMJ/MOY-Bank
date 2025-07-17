@@ -1,5 +1,8 @@
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import {
+  FaBars,
+  FaTimes,
   FaTachometerAlt,
   FaExchangeAlt,
   FaWallet,
@@ -11,107 +14,87 @@ import {
   FaImage,
   FaUserShield,
 } from "react-icons/fa";
+import { useEffect } from "react";
 
 const Sidebar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
+  // Auto-close sidebar on route change (mobile only)
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname]);
+
+  const toggleSidebar = () => setIsOpen(!isOpen);
+
   return (
-    <div className="w-64 bg-white dark:bg-gray-900 text-gray-800 dark:text-white h-screen p-4 space-y-6 shadow">
-      <NavLink
-        to="/dashboard"
-        className="block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
-      >
-        <FaTachometerAlt className="inline mr-2" />
-        Dashboard
-      </NavLink>
+    <>
+      {/* Mobile toggle button */}
+      <div className="md:hidden p-4 flex items-center justify-between bg-white dark:bg-black shadow">
+        <h2 className="text-xl font-bold dark:text-white">MOY-Bank</h2>
+        <button onClick={toggleSidebar} className="text-xl text-gray-700 dark:text-white">
+          {isOpen ? <FaTimes /> : <FaBars />}
+        </button>
+      </div>
 
-      <NavLink
-        to="/dashboard/transfer"
-        className="block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+      {/* Sidebar container */}
+      <aside 
+        className={`
+          fixed top-0 left-0 h-full w-64 z-40 transform bg-white dark:bg-black text-gray-800 dark:text-white shadow-md p-4 space-y-4
+          transition-transform duration-300 ease-in-out
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0 md:relative md:block
+        `}
       >
-        <FaExchangeAlt className="inline mr-2" />
-        Transfer
-      </NavLink>
+        <nav className="space-y-7 mt-10 md:mt-0">
+          <SidebarLink to="/dashboard" icon={<FaTachometerAlt />} label="Dashboard" />
+          <SidebarLink to="/dashboard/transfer" icon={<FaExchangeAlt />} label="Transfer" />
+          <SidebarLink to="/dashboard/withdraw" icon={<FaMoneyBillWave />} label="Withdraw" />
+          <SidebarLink to="/dashboard/deposit" icon={<FaWallet />} label="Deposit" />
+          <SidebarLink to="/dashboard/transactions" icon={<FaExchangeAlt />} label="Transactions" />
+          <SidebarLink to="/dashboard/profile" icon={<FaUser />} label="Profile" />
+          <SidebarLink to="/dashboard/edit-profile" icon={<FaUser />} label="Edit Profile" />
+          <SidebarLink to="/dashboard/change-password" icon={<FaLock />} label="Change Password" />
+          <SidebarLink to="/dashboard/upload-avatar" icon={<FaImage />} label="Upload Avatar" />
+          <SidebarLink to="/dashboard/settings" icon={<FaCogs />} label="Settings" />
+          <SidebarLink to="/dashboard/support" icon={<FaComments />} label="Support" />
+          <SidebarLink to="/dashboard/admin" icon={<FaUserShield />} label="Admin Panel" />
+        </nav>
+      </aside>
 
-      <NavLink
-        to="/dashboard/withdraw"
-        className="block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
-      >
-        <FaMoneyBillWave className="inline mr-2" />
-        Withdraw
-      </NavLink>
-
-      <NavLink
-        to="/dashboard/deposit"
-        className="block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
-      >
-        <FaWallet className="inline mr-2" />
-        Deposit
-      </NavLink>
-
-      <NavLink
-        to="/dashboard/transactions"
-        className="block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
-      >
-        <FaExchangeAlt className="inline mr-2" />
-        Transactions
-      </NavLink>
-
-      <NavLink
-        to="/dashboard/profile"
-        className="block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
-      >
-        <FaUser className="inline mr-2" />
-        Profile
-      </NavLink>
-
-      <NavLink
-        to="/dashboard/edit-profile"
-        className="block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
-      >
-        <FaUser className="inline mr-2" />
-        Edit Profile
-      </NavLink>
-
-      <NavLink
-        to="/dashboard/change-password"
-        className="block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
-      >
-        <FaLock className="inline mr-2" />
-        Change Password
-      </NavLink>
-
-      <NavLink
-        to="/dashboard/upload-avatar"
-        className="block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
-      >
-        <FaImage className="inline mr-2" />
-        Upload Avatar
-      </NavLink>
-
-      <NavLink
-        to="/dashboard/support"
-        className="block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
-      >
-        <FaComments className="inline mr-2" />
-        Support
-      </NavLink>
-
-      {/* Only show to admin users if handled in UI logic */}
-      <NavLink
-        to="/dashboard/admin"
-        className="block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
-      >
-        <FaUserShield className="inline mr-2" />
-        Admin Panel
-      </NavLink>
-      <NavLink
-        to="/dashboard/settings"
-        className="block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
-      >
-        <FaCogs className="inline mr-2" />
-        Settings
-      </NavLink>
-    </div>
+      {/* Overlay on mobile */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 md:hidden z-30"
+          onClick={toggleSidebar}
+        ></div>
+      )}
+    </>
   );
 };
+
+const SidebarLink = ({
+  to,
+  icon,
+  label,
+}: {
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+}) => (
+  <NavLink
+    to={to}
+    className={({ isActive }) =>
+      `flex items-center gap-3 px-3 py-2 rounded transition-colors ${
+        isActive
+          ? "bg-blue-100 dark:bg-gray-800 font-semibold"
+          : "hover:bg-gray-100 dark:hover:bg-gray-900"
+      }`
+    }
+  >
+    {icon}
+    <span>{label}</span>
+  </NavLink>
+);
 
 export default Sidebar;

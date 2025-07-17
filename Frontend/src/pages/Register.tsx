@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { IoCheckmarkCircle, IoCloseCircle } from "react-icons/io5";
+import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -19,14 +20,14 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let { name, value } = e.target;
 
-    // Clean phone number and account number inputs
     if (["phoneNumber", "accountNumber"].includes(name)) {
-      value = value.replace(/\s+/g, ""); // remove spaces
-      if (!/^\d*$/.test(value)) return; // allow only digits
+      value = value.replace(/\s+/g, "");
+      if (!/^\d*$/.test(value)) return;
     }
 
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -46,7 +47,6 @@ const Register = () => {
       );
 
       toast.success("Account created successfully!");
-      navigate("/login");
     } catch (err: any) {
       console.error(err);
       if (err.response?.data?.errors) {
@@ -61,9 +61,15 @@ const Register = () => {
     }
   };
 
+  useEffect(() => {
+    if (user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-      <div className="bg-white dark:bg-gray-800 p-8 rounded shadow w-full max-w-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-950">
+      <div className="bg-white dark:bg-gray-900 p-8 rounded shadow w-full max-w-lg">
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">
           Register
         </h2>

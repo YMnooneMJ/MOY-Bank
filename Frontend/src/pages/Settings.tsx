@@ -1,19 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
-import {
-  FaUserEdit,
-  FaKey,
-  FaImage,
-  FaSun,
-  FaMoon,
-  FaSignOutAlt,
-} from "react-icons/fa";
+import { FaUserEdit, FaKey, FaImage, FaSignOutAlt } from "react-icons/fa";
 import { useTheme } from "../context/ThemeContext";
-import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
+import ThemeSelector from "../components/ThemeSelector";
 
 const Settings = () => {
-  const { logout } = useAuth();
   const navigate = useNavigate();
+  const { logout } = useAuth();
+  const { theme } = useTheme(); 
 
   const handleLogout = () => {
     logout();
@@ -21,19 +16,18 @@ const Settings = () => {
     navigate("/login");
   };
 
-  const { theme, toggleTheme } = useTheme();
   return (
-    <div>
-      <div className="max-w-lg mx-auto mt-10 p-6 rounded-xl bg-white dark:bg-gray-900 shadow-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">
+    <div className="max-w-lg mx-auto mt-10 p-6 rounded-xl bg-white dark:bg-gray-950 backdrop-blur-3xl backdrop-opacity-0 shadow-md">
+      <div className="max-w-lg mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-center">
           ⚙️ Account Settings
         </h1>
 
-        <ul className="space-y-5">
+        <ul className="space-y-4">
           <li>
             <Link
-              to="/edit-profile"
-              className="flex items-center gap-3 bg-gray-800 hover:bg-gray-600 text-white p-3 rounded-lg transition"
+              to="/dashboard/edit-profile"
+              className="flex items-center gap-3 bg-gray-100 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-800 text-gray-900 dark:text-white p-4 rounded-lg transition"
             >
               <FaUserEdit />
               <span>Edit Profile</span>
@@ -42,8 +36,8 @@ const Settings = () => {
 
           <li>
             <Link
-              to="/change-password"
-              className="flex items-center gap-3 bg-gray-800 hover:bg-gray-600 text-white p-3 rounded-lg transition"
+              to="/dashboard/change-password"
+              className="flex items-center gap-3 bg-gray-100 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-800 text-gray-900 dark:text-white p-4 rounded-lg transition"
             >
               <FaKey />
               <span>Change Password</span>
@@ -52,33 +46,24 @@ const Settings = () => {
 
           <li>
             <Link
-              to="/upload-avatar"
-              className="flex items-center gap-3 bg-gray-800 hover:bg-gray-600 text-white p-3 rounded-lg transition"
+              to="/dashboard/upload-avatar"
+              className="flex items-center gap-3 bg-gray-100 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-800 text-gray-900 dark:text-white p-4 rounded-lg transition"
             >
               <FaImage />
               <span>Upload Avatar</span>
             </Link>
           </li>
         </ul>
-        <div className="flex gap-1 items-center text-2xl mt-6">
-          <FaSun />
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              onChange={toggleTheme}
-              checked={theme === "dark"}
-              className="sr-only"
-            />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-          </label>
-          <FaMoon />
-        </div>
       </div>
-      <div>
+
+      <div className="max-w-lg mx-auto mt-3">
+        <ThemeSelector />
+      </div>
+
+      <div className="max-w-lg mx-auto">
         <button
           onClick={handleLogout}
-          className="w-lg mx-auto mt-6 p-4 rounded-xl bg-white dark:bg-gray-900 shadow-md flex items-center justify-center gap-2 text-gray-900 dark:text-white/90 hover:text-gray-600 cursor-pointer"
-          title="Logout"
+          className="w-full mt-4 p-4 rounded-xl bg-neutral-900 hover:bg-gray-900 text-white font-semibold flex items-center justify-center gap-2"
         >
           <FaSignOutAlt />
           Sign Out

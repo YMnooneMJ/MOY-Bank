@@ -6,7 +6,9 @@ const App = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <AppRoutes />
+        <div className="min-h-screen bg-white text-black dark:bg-diamond-black dark:text-white transition-colors duration-300">
+          <AppRoutes />
+        </div>
       </AuthProvider>
     </ThemeProvider>
   );

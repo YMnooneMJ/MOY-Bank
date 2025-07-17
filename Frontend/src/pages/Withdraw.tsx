@@ -47,7 +47,7 @@ const Withdraw = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white dark:bg-gray-800 p-6 rounded-xl shadow space-y-5">
+    <div className="max-w-md mx-auto bg-white dark:bg-gray-800 p-6 mt-10 rounded-xl shadow space-y-5">
       <h2 className="text-2xl font-semibold mb-4">Withdraw Funds</h2>
 
       <form onSubmit={handleWithdraw} className="space-y-4">
